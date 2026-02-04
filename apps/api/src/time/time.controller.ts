@@ -19,6 +19,11 @@ export class TimeController {
     return this.time.stop(req.user.tenantId, req.user.sub, dto);
   }
 
+  @Get('active')
+  async active(@Req() req: any) {
+    return this.time.active(req.user.tenantId, req.user.role);
+  }
+
   @Get()
   async list(@Req() req: any, @Query() query: TimeQueryDto) {
     return this.time.list(req.user.tenantId, req.user.sub, req.user.role, query);

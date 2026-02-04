@@ -140,6 +140,27 @@ export async function getTime(userId?: string, from?: string, to?: string) {
   >;
 }
 
+export async function getActiveSessions() {
+  return apiFetch('/time/active') as Promise<
+    Array<{
+      id: string;
+      userId: string;
+      userName: string;
+      userEmail: string;
+      role: string;
+      deviceId: string | null;
+      deviceName: string | null;
+      platform: string | null;
+      startedAt: string;
+      lastActivityAt: string | null;
+      lastApp: string | null;
+      lastWindowTitle: string | null;
+      lastUrl: string | null;
+      idle: boolean | null;
+    }>
+  >;
+}
+
 export async function getActivity(userId?: string, from?: string, to?: string) {
   const params = new URLSearchParams();
   if (userId) params.set('userId', userId);

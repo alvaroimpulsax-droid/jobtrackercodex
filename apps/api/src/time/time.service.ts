@@ -86,4 +86,54 @@ export class TimeService {
       take: 500,
     });
   }
+
+  async active(tenantId: string, requesterRole: string) {
+    const isPrivileged = ['owner', 'admin', 'manager', 'auditor'].includes(requesterRole);
+    if (!isPrivileged) {
+      throw new ForbiddenException('Not allowed to view active sessions');
+    }
+
+    const entries = await this.prisma.timeEntry.findMany({
+      where: { tenantId, endedAt: null },
+      include: { user: true, device: true },
+      orderBy: { startedAt: 'desc' },
+    });
+
+    if (!entries.length) {
+      return [];
+    }
+
+    const userIds = [...new Set(entries.map((entry) => entry.userId))];
+    const memberships = await this.prisma.membership.findMany({
+      where: { tenantId, userId: { in: userIds } },
+    });
+    const roleByUser = new Map(memberships.map((m) => [m.userId, m.role]));
+
+    const results = [];
+    for (const entry of entries) {
+      const lastEvent = await this.prisma.activityEvent.findFirst({
+        where: { tenantId, userId: entry.userId },
+        orderBy: { endedAt: 'desc' },
+      });
+
+      results.push({
+        id: entry.id,
+        userId: entry.userId,
+        userName: entry.user.name,
+        userEmail: entry.user.email,
+        role: roleByUser.get(entry.userId) ?? 'employee',
+        deviceId: entry.deviceId,
+        deviceName: entry.device?.deviceName ?? null,
+        platform: entry.device?.platform ?? null,
+        startedAt: entry.startedAt,
+        lastActivityAt: lastEvent?.endedAt ?? null,
+        lastApp: lastEvent?.appName ?? null,
+        lastWindowTitle: lastEvent?.windowTitle ?? null,
+        lastUrl: lastEvent?.url ?? null,
+        idle: lastEvent?.idle ?? null,
+      });
+    }
+
+    return results;
+  }
 }
