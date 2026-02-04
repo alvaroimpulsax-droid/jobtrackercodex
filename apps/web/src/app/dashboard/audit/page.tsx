@@ -23,7 +23,7 @@ export default function AuditPage() {
         const data = await getAudit(undefined, undefined, 200);
         setItems(data);
       } catch (err: any) {
-        setError(err?.message ?? 'No se pudo cargar auditoría');
+        setError(err?.message ?? 'No se pudo cargar auditorÃ­a');
       }
     };
     load();
@@ -33,7 +33,7 @@ export default function AuditPage() {
     <div className="fade-in">
       <header className={styles.topbar}>
         <div>
-          <h1 className={styles.topbarTitle}>Auditoría</h1>
+          <h1 className={styles.topbarTitle}>AuditorÃ­a</h1>
           <p className={styles.topbarMeta}>Registro de acciones administrativas.</p>
         </div>
       </header>
@@ -45,7 +45,7 @@ export default function AuditPage() {
           <thead>
             <tr>
               <th>Fecha</th>
-              <th>Acción</th>
+              <th>AcciÃ³n</th>
               <th>Entidad</th>
               <th>Detalle</th>
             </tr>
@@ -61,7 +61,7 @@ export default function AuditPage() {
             ))}
             {items.length === 0 ? (
               <tr>
-                <td colSpan={4}>No hay eventos aún.</td>
+                <td colSpan={4}>No hay eventos aÃºn.</td>
               </tr>
             ) : null}
           </tbody>

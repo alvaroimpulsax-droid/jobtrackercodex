@@ -46,11 +46,11 @@ export default function LoginPage() {
             />
           </label>
           <label className={styles.field}>
-            Contraseña
+            ContraseÃ±a
             <input
               className={styles.input}
               type="password"
-              placeholder="••••••••"
+              placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -70,7 +70,7 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-        <p className={styles.hint}>¿Primera vez? Usa el endpoint de bootstrap para crear tu tenant.</p>
+        <p className={styles.hint}>Â¿Primera vez? Usa el endpoint de bootstrap para crear tu tenant.</p>
         <p className={styles.hint}>
           <Link href="/">Volver al inicio</Link>
         </p>

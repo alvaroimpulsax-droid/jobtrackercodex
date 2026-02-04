@@ -9,8 +9,8 @@ import { getAccessToken, logout } from '@/lib/auth';
 const nav = [
   { href: '/dashboard', label: 'Resumen' },
   { href: '/dashboard/users', label: 'Empleados' },
-  { href: '/dashboard/policies', label: 'Políticas' },
-  { href: '/dashboard/audit', label: 'Auditoría' },
+  { href: '/dashboard/policies', label: 'PolÃ­ticas' },
+  { href: '/dashboard/audit', label: 'AuditorÃ­a' },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className={styles.sidebarCard}>
           <div className={styles.cardLabel}>Capturas</div>
           <div className={styles.cardValue}>Cada 10 min</div>
-          <p className={styles.topbarMeta}>Retención 15 días</p>
+          <p className={styles.topbarMeta}>RetenciÃ³n 15 dÃ­as</p>
         </div>
         <button
           className={styles.navItem}
@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             router.push('/login');
           }}
         >
-          Cerrar sesión
+          Cerrar sesiÃ³n
         </button>
       </aside>
       <section className={styles.content}>{children}</section>

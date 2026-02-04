@@ -19,7 +19,7 @@ export default function PoliciesPage() {
         setActivityRetention(policy.activityRetentionDays?.toString() ?? '');
         setScreenshotRetention(policy.screenshotRetentionDays?.toString() ?? '15');
       } catch (err: any) {
-        setMessage(err?.message ?? 'No se pudo cargar políticas');
+        setMessage(err?.message ?? 'No se pudo cargar polÃ­ticas');
       }
     };
     load();
@@ -32,26 +32,26 @@ export default function PoliciesPage() {
       activityRetentionDays: activityRetention ? Number(activityRetention) : null,
       screenshotRetentionDays: screenshotRetention ? Number(screenshotRetention) : null,
     });
-    setMessage('Políticas actualizadas');
+    setMessage('PolÃ­ticas actualizadas');
   };
 
   return (
     <div className="fade-in">
       <header className={styles.topbar}>
         <div>
-          <h1 className={styles.topbarTitle}>Políticas de retención</h1>
-          <p className={styles.topbarMeta}>Configura cuánto tiempo se guardan los datos.</p>
+          <h1 className={styles.topbarTitle}>PolÃ­ticas de retenciÃ³n</h1>
+          <p className={styles.topbarMeta}>Configura cuÃ¡nto tiempo se guardan los datos.</p>
         </div>
       </header>
 
       <section className={styles.panel}>
-        <h2 className={styles.topbarTitle}>Retención por defecto</h2>
+        <h2 className={styles.topbarTitle}>RetenciÃ³n por defecto</h2>
         <p className={styles.topbarMeta}>
-          Deja vacío para retención indefinida (según tu política interna).
+          Deja vacÃ­o para retenciÃ³n indefinida (segÃºn tu polÃ­tica interna).
         </p>
         <form className={formStyles.form} onSubmit={(e) => e.preventDefault()}>
           <label className={formStyles.field}>
-            Registros horarios (días)
+            Registros horarios (dÃ­as)
             <input
               className={formStyles.input}
               type="number"
@@ -63,7 +63,7 @@ export default function PoliciesPage() {
             />
           </label>
           <label className={formStyles.field}>
-            Actividad (días)
+            Actividad (dÃ­as)
             <input
               className={formStyles.input}
               type="number"
@@ -75,7 +75,7 @@ export default function PoliciesPage() {
             />
           </label>
           <label className={formStyles.field}>
-            Capturas (días)
+            Capturas (dÃ­as)
             <input
               className={formStyles.input}
               type="number"

@@ -87,7 +87,7 @@ export default function DashboardPage() {
 
       <section className={styles.panel}>
         <h2 className={styles.topbarTitle}>Equipo</h2>
-        <p className={styles.topbarMeta}>Vista rápida de empleados (datos reales).</p>
+        <p className={styles.topbarMeta}>Vista rÃ¡pida de empleados (datos reales).</p>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
             ))}
             {!loading && users.length === 0 ? (
               <tr>
-                <td colSpan={4}>No hay usuarios aún.</td>
+                <td colSpan={4}>No hay usuarios aÃºn.</td>
               </tr>
             ) : null}
           </tbody>
