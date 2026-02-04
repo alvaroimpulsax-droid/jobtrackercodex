@@ -9,6 +9,8 @@ FROM node:22-slim AS build
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build -w @jobtracker/web
 
 FROM node:22-slim AS runner
