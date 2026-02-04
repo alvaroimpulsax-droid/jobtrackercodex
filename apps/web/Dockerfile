@@ -20,4 +20,4 @@ COPY --from=build /app/apps/web/public ./apps/web/public
 COPY --from=build /app/apps/web/package.json ./apps/web/package.json
 WORKDIR /app/apps/web
 EXPOSE 3000
-CMD ["node", "../node_modules/next/dist/bin/next", "start", "-p", "3000"]
+CMD ["node", "/app/node_modules/next/dist/bin/next", "start", "-p", "3000"]
