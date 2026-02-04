@@ -3,13 +3,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/package.json
 COPY packages/shared/package.json packages/shared/package.json
-RUN npm install
+RUN npm install --include=dev
 
 FROM node:22-slim AS build
 WORKDIR /app
+RUN apt-get update && apt-get install -y openssl
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
-RUN npx prisma@6.10.1 generate --schema apps/api/prisma/schema.prisma
+RUN npm run prisma:generate -w @jobtracker/api
 RUN npm run build -w @jobtracker/api
 
 FROM node:22-slim AS runner
