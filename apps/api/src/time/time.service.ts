@@ -109,7 +109,22 @@ export class TimeService {
     });
     const roleByUser = new Map(memberships.map((m) => [m.userId, m.role]));
 
-    const results = [];
+    const results: Array<{
+      id: string;
+      userId: string;
+      userName: string;
+      userEmail: string;
+      role: string;
+      deviceId: string | null;
+      deviceName: string | null;
+      platform: string | null;
+      startedAt: Date;
+      lastActivityAt: Date | null;
+      lastApp: string | null;
+      lastWindowTitle: string | null;
+      lastUrl: string | null;
+      idle: boolean | null;
+    }> = [];
     for (const entry of entries) {
       const lastEvent = await this.prisma.activityEvent.findFirst({
         where: { tenantId, userId: entry.userId },
