@@ -18,6 +18,7 @@ RUN npm run build -w @jobtracker/api
 FROM node:22-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
