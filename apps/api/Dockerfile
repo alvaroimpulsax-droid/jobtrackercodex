@@ -10,6 +10,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y openssl
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
+ENV PATH="/app/node_modules/.bin:$PATH"
 RUN npm run prisma:generate -w @jobtracker/api
 RUN npm run build -w @jobtracker/api
 
