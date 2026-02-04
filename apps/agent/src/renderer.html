@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JobTracker Agent</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="card">
+      <h1>JobTracker Agent</h1>
+      <p class="muted">Inicia sesión y controla el tracking.</p>
+
+      <div class="section">
+        <label>API URL</label>
+        <input id="apiUrl" placeholder="http://localhost:4000" />
+        <button id="saveApi">Guardar API</button>
+      </div>
+
+      <div class="section">
+        <label>Email</label>
+        <input id="email" type="email" />
+        <label>Contraseña</label>
+        <input id="password" type="password" />
+        <label>Tenant ID (opcional)</label>
+        <input id="tenantId" />
+        <button id="login">Entrar</button>
+      </div>
+
+      <div class="section">
+        <label class="toggle">
+          <input id="autoStart" type="checkbox" />
+          Iniciar con el sistema
+        </label>
+        <button id="checkUpdates">Buscar actualizaciones</button>
+        <p id="updateStatus" class="muted"></p>
+      </div>
+
+      <div class="section">
+        <button id="start">Iniciar tracking</button>
+        <button id="stop">Parar tracking</button>
+        <button id="logout">Cerrar sesión</button>
+      </div>
+
+      <p id="status" class="muted"></p>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

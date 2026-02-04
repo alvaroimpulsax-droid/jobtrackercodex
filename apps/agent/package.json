@@ -1,0 +1,57 @@
+{
+  "name": "@jobtracker/agent",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaroimpulsax-droid/jobtrackercodex.git"
+  },
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "active-win": "^8.0.3",
+    "better-sqlite3": "^11.6.0",
+    "electron-log": "^5.1.5",
+    "electron-updater": "^6.3.9",
+    "screenshot-desktop": "^1.15.0"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.jobtracker.agent",
+    "productName": "JobTracker Agent",
+    "files": [
+      "src/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "src/assets",
+        "to": "assets"
+      }
+    ],
+    "artifactName": "JobTrackerAgent-${version}-${os}.${ext}",
+    "asar": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "alvaroimpulsax-droid",
+        "repo": "jobtrackercodex"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/icon.png"
+    }
+  }
+}

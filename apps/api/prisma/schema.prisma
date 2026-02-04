@@ -1,0 +1,203 @@
+// Prisma schema for JobTracker MVP
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  active
+  disabled
+}
+
+enum TenantStatus {
+  active
+  suspended
+}
+
+enum Role {
+  owner
+  admin
+  manager
+  employee
+  auditor
+}
+
+enum TimeEntrySource {
+  manual
+  agent
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  status    TenantStatus @default(active)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships     Membership[]
+  devices         Device[]
+  timeEntries     TimeEntry[]
+  activityEvents  ActivityEvent[]
+  screenshots     Screenshot[]
+  auditLogs       AuditLog[]
+  retentionPolicy RetentionPolicy?
+  capturePolicies CapturePolicy[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  status       UserStatus @default(active)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastLoginAt  DateTime?
+
+  memberships  Membership[]
+  devices      Device[]
+  timeEntries  TimeEntry[]
+  activityEvents ActivityEvent[]
+  screenshots  Screenshot[]
+  auditLogs    AuditLog[] @relation("AuditActor")
+  capturePolicies CapturePolicy[]
+}
+
+model Membership {
+  id                String   @id @default(cuid())
+  tenantId          String
+  userId            String
+  role              Role
+  canViewOwnHistory Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  tenantId   String
+  userId     String
+  deviceName String
+  platform   String
+  status     String @default("active")
+  lastSeenAt DateTime?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  timeEntries     TimeEntry[]
+  activityEvents  ActivityEvent[]
+  screenshots     Screenshot[]
+
+  @@index([tenantId])
+  @@index([userId])
+}
+
+model TimeEntry {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  deviceId  String?
+  startedAt DateTime
+  endedAt   DateTime?
+  source    TimeEntrySource @default(manual)
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  device Device? @relation(fields: [deviceId], references: [id])
+
+  @@index([tenantId, userId, startedAt])
+}
+
+model ActivityEvent {
+  id          String   @id @default(cuid())
+  tenantId    String
+  userId      String
+  deviceId    String?
+  startedAt   DateTime
+  endedAt     DateTime
+  appName     String
+  windowTitle String?
+  url         String?
+  idle        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  device Device? @relation(fields: [deviceId], references: [id])
+
+  @@index([tenantId, userId, startedAt])
+}
+
+model Screenshot {
+  id         String   @id @default(cuid())
+  tenantId   String
+  userId     String
+  deviceId   String?
+  takenAt    DateTime
+  storageKey String
+  sizeBytes  Int?
+  expiresAt  DateTime?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  device Device? @relation(fields: [deviceId], references: [id])
+
+  @@index([tenantId, userId, takenAt])
+  @@index([expiresAt])
+}
+
+model RetentionPolicy {
+  id                     String   @id @default(cuid())
+  tenantId               String   @unique
+  timeRetentionDays      Int?
+  activityRetentionDays  Int?
+  screenshotRetentionDays Int? @default(15)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model CapturePolicy {
+  id              String   @id @default(cuid())
+  tenantId        String
+  userId          String
+  intervalSeconds Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([tenantId, userId])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String
+  actorUserId String?
+  action      String
+  entity      String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  actor  User?  @relation("AuditActor", fields: [actorUserId], references: [id])
+
+  @@index([tenantId, createdAt])
+}

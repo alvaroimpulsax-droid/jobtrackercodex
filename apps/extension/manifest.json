@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "JobTracker URL Bridge",
+  "version": "0.1.0",
+  "description": "Envía la URL activa al agente local de JobTracker.",
+  "permissions": ["tabs", "activeTab"],
+  "host_permissions": ["http://127.0.0.1:17330/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "JobTracker"
+  }
+}
