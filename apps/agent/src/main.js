@@ -9,6 +9,7 @@ const Database = require('better-sqlite3');
 const DEFAULT_API_URL = 'http://localhost:4000';
 const IDLE_THRESHOLD_SECONDS = 180;
 const ACTIVITY_POLL_MS = 5000;
+const MAX_ACTIVITY_SEGMENT_MS = 60000;
 const FLUSH_INTERVAL_MS = 30000;
 const SCREEN_FLUSH_INTERVAL_MS = 60000;
 
@@ -229,43 +230,45 @@ async function getActiveWindow() {
 
 async function pollActivity() {
   if (!tracking) return;
+  let windowInfo = null;
   try {
-    const windowInfo = await getActiveWindow();
-    const idle = powerMonitor.getSystemIdleTime() >= IDLE_THRESHOLD_SECONDS;
-
-    const appName = windowInfo?.owner?.name || 'Unknown';
-    const windowTitle = windowInfo?.title || '';
-    const url = isBrowser(appName) ? getLatestUrl() : null;
-
-    const now = new Date();
-
-    if (!pollActivity.current) {
-      pollActivity.current = { appName, windowTitle, url, idle, startedAt: now };
-      return;
-    }
-
-    const current = pollActivity.current;
-    const changed =
-      current.appName !== appName ||
-      current.windowTitle !== windowTitle ||
-      current.url !== url ||
-      current.idle !== idle;
-
-    if (changed) {
-      const event = {
-        startedAt: current.startedAt.toISOString(),
-        endedAt: now.toISOString(),
-        appName: current.appName,
-        windowTitle: current.windowTitle,
-        url: current.url,
-        idle: current.idle,
-        deviceId: loadConfig().deviceId,
-      };
-      enqueueActivity(event);
-      pollActivity.current = { appName, windowTitle, url, idle, startedAt: now };
-    }
+    windowInfo = await getActiveWindow();
   } catch (err) {
     console.warn('Activity poll error', err.message);
+  }
+
+  const idle = powerMonitor.getSystemIdleTime() >= IDLE_THRESHOLD_SECONDS;
+  const appName = windowInfo?.owner?.name || 'Unknown';
+  const windowTitle = windowInfo?.title || '';
+  const url = isBrowser(appName) ? getLatestUrl() : null;
+  const now = new Date();
+
+  if (!pollActivity.current) {
+    pollActivity.current = { appName, windowTitle, url, idle, startedAt: now };
+    return;
+  }
+
+  const current = pollActivity.current;
+  const changed =
+    current.appName !== appName ||
+    current.windowTitle !== windowTitle ||
+    current.url !== url ||
+    current.idle !== idle;
+
+  const segmentTooLong = now.getTime() - current.startedAt.getTime() >= MAX_ACTIVITY_SEGMENT_MS;
+
+  if (changed || segmentTooLong) {
+    const event = {
+      startedAt: current.startedAt.toISOString(),
+      endedAt: now.toISOString(),
+      appName: current.appName,
+      windowTitle: current.windowTitle,
+      url: current.url,
+      idle: current.idle,
+      deviceId: loadConfig().deviceId,
+    };
+    enqueueActivity(event);
+    pollActivity.current = { appName, windowTitle, url, idle, startedAt: now };
   }
 }
 
@@ -508,14 +511,14 @@ function configureAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.on('checking-for-update', () => sendUpdateStatus('Buscando actualizaciones...'));
-  autoUpdater.on('update-available', () => sendUpdateStatus('Actualización disponible.'));
+  autoUpdater.on('update-available', () => sendUpdateStatus('ActualizaciÃ³n disponible.'));
   autoUpdater.on('update-not-available', () => sendUpdateStatus('Sin actualizaciones.'));
-  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualización: ${err.message}`));
+  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualizaciÃ³n: ${err.message}`));
   autoUpdater.on('download-progress', (p) =>
     sendUpdateStatus(`Descargando ${Math.round(p.percent)}%`)
   );
   autoUpdater.on('update-downloaded', () => {
-    sendUpdateStatus('Actualización descargada. Reinicia para instalar.');
+    sendUpdateStatus('ActualizaciÃ³n descargada. Reinicia para instalar.');
   });
 }
 
