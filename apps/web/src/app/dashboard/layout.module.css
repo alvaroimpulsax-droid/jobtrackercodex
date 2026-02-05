@@ -153,6 +153,61 @@
   color: var(--accent-2);
 }
 
+.sessionCard {
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.sessionSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.sessionSummary::-webkit-details-marker {
+  display: none;
+}
+
+.sessionTitle {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sessionMeta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sessionStats {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.sessionDetails {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.shotsGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.shotCard {
+  background: rgba(12, 14, 20, 0.4);
+  border-radius: 12px;
+  padding: 8px;
+}
+
 @media (max-width: 960px) {
   .layout {
     grid-template-columns: 1fr;

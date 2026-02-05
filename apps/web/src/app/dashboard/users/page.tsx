@@ -89,7 +89,7 @@ export default function UsersPage() {
               />
             </label>
             <label className={styles.formRow}>
-              Contraseña
+              Contrasena
               <input
                 className={styles.formInput}
                 type="password"
@@ -158,7 +158,7 @@ export default function UsersPage() {
             ))}
             {!loading && users.length === 0 ? (
               <tr>
-                <td colSpan={4}>No hay usuarios aún.</td>
+                <td colSpan={4}>No hay usuarios aun.</td>
               </tr>
             ) : null}
           </tbody>

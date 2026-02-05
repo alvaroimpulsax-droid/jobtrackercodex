@@ -59,6 +59,19 @@ function downloadCsv(filename: string, rows: string[][]) {
   URL.revokeObjectURL(url);
 }
 
+function formatDuration(ms: number) {
+  if (!Number.isFinite(ms) || ms < 0) return '0m';
+  const totalMinutes = Math.floor(ms / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${minutes}m`;
+  return `${hours}h ${minutes}m`;
+}
+
+function formatDateTime(value: string) {
+  return new Date(value).toLocaleString('es-ES');
+}
+
 export default function UserDetailPage() {
   const params = useParams();
   const userId = params?.id as string;
@@ -152,6 +165,37 @@ export default function UserDetailPage() {
     });
   };
 
+  const sessions = time.map((entry) => {
+    const start = new Date(entry.startedAt);
+    const end = entry.endedAt ? new Date(entry.endedAt) : new Date();
+    const events = activity
+      .filter((event) => {
+        const startedAt = new Date(event.startedAt);
+        return startedAt >= start && startedAt <= end;
+      })
+      .sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
+
+    const shots = screenshots
+      .filter((shot) => {
+        const takenAt = new Date(shot.takenAt);
+        return takenAt >= start && takenAt <= end;
+      })
+      .sort((a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime());
+
+    const lastEvent = events.length ? events[events.length - 1] : null;
+    const duration = formatDuration(end.getTime() - start.getTime());
+
+    return {
+      ...entry,
+      start,
+      end,
+      duration,
+      events,
+      shots,
+      lastEvent,
+    };
+  });
+
   return (
     <div className="fade-in">
       <header className={styles.topbar}>
@@ -172,7 +216,7 @@ export default function UserDetailPage() {
       {error ? <p className={styles.topbarMeta}>{error}</p> : null}
 
       <section className={styles.panel}>
-        <h2 className={styles.topbarTitle}>Configuraci�n</h2>
+        <h2 className={styles.topbarTitle}>Configuracion</h2>
         <div className={styles.cards}>
           <label className={styles.formRow}>
             Rol
@@ -222,81 +266,100 @@ export default function UserDetailPage() {
         </div>
       </section>
 
-      <section className={styles.grid}>
-        <div className={styles.panel}>
-          <h2 className={styles.topbarTitle}>�ltimas 24h</h2>
-          <p className={styles.topbarMeta}>Registros horarios recientes.</p>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Inicio</th>
-                <th>Fin</th>
-              </tr>
-            </thead>
-            <tbody>
-              {time.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{new Date(entry.startedAt).toLocaleString('es-ES')}</td>
-                  <td>{entry.endedAt ? new Date(entry.endedAt).toLocaleString('es-ES') : 'En curso'}</td>
-                </tr>
-              ))}
-              {time.length === 0 ? (
-                <tr>
-                  <td colSpan={2}>No hay registros.</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
+      <section className={styles.panel} style={{ marginTop: 20 }}>
+        <h2 className={styles.topbarTitle}>Sesiones (ultimas 24h)</h2>
+        <p className={styles.topbarMeta}>Cada sesion incluye actividad y capturas dentro del horario.</p>
 
-        <div className={styles.panel}>
-          <h2 className={styles.topbarTitle}>Actividad</h2>
-          <p className={styles.topbarMeta}>Apps, ventanas y URLs detectadas.</p>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>App</th>
-                <th>Ventana</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activity.slice(0, 8).map((event) => (
-                <tr key={event.id}>
-                  <td>{event.appName}</td>
-                  <td>{event.windowTitle || event.url || '-'}</td>
-                  <td>
-                    <span className={styles.tag}>{event.idle ? 'Idle' : 'Activo'}</span>
-                  </td>
-                </tr>
-              ))}
-              {activity.length === 0 ? (
-                <tr>
-                  <td colSpan={3}>No hay actividad registrada.</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      </section>
+        {sessions.map((session) => (
+          <details key={session.id} className={styles.sessionCard}>
+            <summary className={styles.sessionSummary}>
+              <div>
+                <div className={styles.sessionTitle}>
+                  {formatDateTime(session.startedAt)}
+                  {session.endedAt ? ` - ${formatDateTime(session.endedAt)}` : ' - En curso'}
+                </div>
+                <div className={styles.sessionMeta}>Duracion: {session.duration}</div>
+              </div>
+              <div className={styles.sessionMeta}>
+                {session.lastEvent
+                  ? session.lastEvent.idle
+                    ? 'Idle'
+                    : 'Activo'
+                  : 'Sin actividad'}
+              </div>
+            </summary>
 
-      <section className={styles.panel}>
-        <h2 className={styles.topbarTitle}>Capturas recientes</h2>
-        <p className={styles.topbarMeta}>Solo se muestran si hay URL p�blica configurada.</p>
-        <div className={styles.cards}>
-          {screenshots.slice(0, 6).map((shot) => (
-            <div key={shot.id} className={styles.card}>
-              <div className={styles.topbarMeta}>{new Date(shot.takenAt).toLocaleString('es-ES')}</div>
-              {shot.url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={shot.url} alt="captura" style={{ width: '100%', marginTop: 12, borderRadius: 12 }} />
-              ) : (
-                <div className={styles.topbarMeta}>Sin URL p�blica</div>
-              )}
+            <div className={styles.sessionStats}>
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>Eventos</div>
+                <div className={styles.cardValue}>{session.events.length}</div>
+              </div>
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>Capturas</div>
+                <div className={styles.cardValue}>{session.shots.length}</div>
+              </div>
+              <div className={styles.card}>
+                <div className={styles.cardLabel}>Ultima app</div>
+                <div className={styles.cardValue}>{session.lastEvent?.appName ?? 'N/D'}</div>
+              </div>
             </div>
-          ))}
-          {screenshots.length === 0 ? <p className={styles.topbarMeta}>No hay capturas.</p> : null}
-        </div>
+
+            <div className={styles.sessionDetails}>
+              <div className={styles.panel}>
+                <h3 className={styles.sessionTitle}>Actividad</h3>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Inicio</th>
+                      <th>Fin</th>
+                      <th>App</th>
+                      <th>Ventana / URL</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {session.events.map((event) => (
+                      <tr key={event.id}>
+                        <td>{formatDateTime(event.startedAt)}</td>
+                        <td>{formatDateTime(event.endedAt)}</td>
+                        <td>{event.appName}</td>
+                        <td>{event.windowTitle || event.url || '-'}</td>
+                        <td>
+                          <span className={styles.tag}>{event.idle ? 'Idle' : 'Activo'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                    {session.events.length === 0 ? (
+                      <tr>
+                        <td colSpan={5}>No hay actividad en esta sesion.</td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className={styles.panel}>
+                <h3 className={styles.sessionTitle}>Capturas</h3>
+                <div className={styles.shotsGrid}>
+                  {session.shots.map((shot) => (
+                    <div key={shot.id} className={styles.shotCard}>
+                      <div className={styles.sessionMeta}>{formatDateTime(shot.takenAt)}</div>
+                      {shot.url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={shot.url} alt="captura" style={{ width: '100%', marginTop: 10, borderRadius: 10 }} />
+                      ) : (
+                        <div className={styles.sessionMeta}>Sin URL publica</div>
+                      )}
+                    </div>
+                  ))}
+                  {session.shots.length === 0 ? <p className={styles.sessionMeta}>No hay capturas.</p> : null}
+                </div>
+              </div>
+            </div>
+          </details>
+        ))}
+
+        {sessions.length === 0 ? <p className={styles.topbarMeta}>No hay sesiones registradas.</p> : null}
       </section>
     </div>
   );

@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu, nativeImage } = r
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const screenshot = require('screenshot-desktop');
 const Database = require('better-sqlite3');
@@ -24,6 +23,7 @@ let screenFlushTimer = null;
 let latestBrowserInfo = null;
 let activeWinFn = null;
 let db = null;
+let autoUpdater = null;
 
 const configPath = () => path.join(app.getPath('userData'), 'config.json');
 const screenshotsDir = () => path.join(app.getPath('userData'), 'screens');
@@ -499,18 +499,23 @@ function startLocalServer() {
 }
 
 function configureAutoUpdater() {
+  if (!app.isPackaged) {
+    return;
+  }
+  const { autoUpdater: updater } = require('electron-updater');
+  autoUpdater = updater;
   autoUpdater.logger = log;
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.on('checking-for-update', () => sendUpdateStatus('Buscando actualizaciones...'));
-  autoUpdater.on('update-available', () => sendUpdateStatus('Actualización disponible.'));
+  autoUpdater.on('update-available', () => sendUpdateStatus('ActualizaciÃ³n disponible.'));
   autoUpdater.on('update-not-available', () => sendUpdateStatus('Sin actualizaciones.'));
-  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualización: ${err.message}`));
+  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualizaciÃ³n: ${err.message}`));
   autoUpdater.on('download-progress', (p) =>
     sendUpdateStatus(`Descargando ${Math.round(p.percent)}%`)
   );
   autoUpdater.on('update-downloaded', () => {
-    sendUpdateStatus('Actualización descargada. Reinicia para instalar.');
+    sendUpdateStatus('ActualizaciÃ³n descargada. Reinicia para instalar.');
   });
 }
 
@@ -542,6 +547,9 @@ ipcMain.handle('check-updates', () => {
   if (!app.isPackaged) {
     sendUpdateStatus('Las actualizaciones solo funcionan en builds empaquetados.');
     return { ok: false };
+  }
+  if (!autoUpdater) {
+    configureAutoUpdater();
   }
   autoUpdater.checkForUpdates();
   return { ok: true };
@@ -600,7 +608,7 @@ app.whenReady().then(() => {
   createTray();
   startLocalServer();
   configureAutoUpdater();
-  if (app.isPackaged) {
+  if (app.isPackaged && autoUpdater) {
     autoUpdater.checkForUpdatesAndNotify();
   }
 });
