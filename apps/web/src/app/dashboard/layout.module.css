@@ -1,27 +1,39 @@
 .layout {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 280px 1fr;
 }
 
 .sidebar {
-  background: rgba(15, 17, 21, 0.9);
-  padding: 32px 24px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(10, 16, 24, 0.96), rgba(9, 14, 20, 0.92));
+  padding: 28px 22px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 22px;
+  backdrop-filter: blur(16px);
 }
 
-.brand {
-  font-family: var(--font-serif), serif;
-  font-size: 22px;
-  letter-spacing: 0.02em;
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  width: 160px;
+  height: 40px;
+}
+
+.brandText {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .nav {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .navItem {
@@ -34,21 +46,29 @@
   cursor: pointer;
 }
 
-.navItemActive {
-  background: var(--panel);
-  border-color: rgba(255, 255, 255, 0.08);
+.navItem:hover {
   color: var(--text);
+  border-color: rgba(25, 118, 210, 0.3);
+  transform: translateX(2px);
+}
+
+.navItemActive {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.22), rgba(66, 165, 245, 0.1));
+  border-color: rgba(25, 118, 210, 0.5);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.2);
 }
 
 .sidebarCard {
   margin-top: auto;
   padding: 16px;
-  background: var(--panel);
+  background: rgba(16, 26, 38, 0.85);
   border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .content {
-  padding: 40px 40px 60px;
+  padding: 36px 40px 64px;
 }
 
 .topbar {
@@ -60,8 +80,9 @@
 }
 
 .topbarTitle {
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .topbarMeta {
@@ -76,11 +97,29 @@
   margin-bottom: 24px;
 }
 
+.cards > * {
+  opacity: 0;
+  animation: rise 520ms ease forwards;
+}
+
+.cards > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+
+.cards > *:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.cards > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
 .card {
-  background: var(--panel);
+  background: linear-gradient(135deg, rgba(16, 26, 38, 0.92), rgba(13, 21, 31, 0.92));
   border-radius: 18px;
   padding: 20px;
   box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cardLabel {
@@ -91,8 +130,8 @@
 }
 
 .cardValue {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   margin: 6px 0 4px;
 }
 
@@ -103,9 +142,11 @@
 }
 
 .panel {
-  background: var(--panel);
+  background: rgba(16, 26, 38, 0.9);
   border-radius: 18px;
   padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow);
 }
 
 .formRow {
@@ -119,7 +160,7 @@
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(12, 14, 20, 0.4);
+  background: rgba(10, 16, 24, 0.6);
   color: var(--text);
 }
 
@@ -138,10 +179,14 @@
 
 .table th {
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 11px;
+}
+
+.table tr:hover td {
+  background: rgba(25, 118, 210, 0.1);
 }
 
 .tag {
@@ -149,15 +194,16 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
-  background: rgba(110, 231, 210, 0.15);
-  color: var(--accent-2);
+  background: rgba(25, 118, 210, 0.2);
+  color: var(--brand-2);
 }
 
 .sessionCard {
-  background: var(--panel);
+  background: rgba(16, 26, 38, 0.9);
   border-radius: 18px;
   padding: 16px;
   margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .sessionSummary {
@@ -171,6 +217,17 @@
 
 .sessionSummary::-webkit-details-marker {
   display: none;
+}
+
+.sessionSummary::after {
+  content: '▾';
+  font-size: 14px;
+  color: var(--muted);
+  transition: transform 200ms ease;
+}
+
+details[open] .sessionSummary::after {
+  transform: rotate(-180deg);
 }
 
 .sessionTitle {
@@ -203,9 +260,21 @@
 }
 
 .shotCard {
-  background: rgba(12, 14, 20, 0.4);
+  background: rgba(10, 16, 24, 0.6);
   border-radius: 12px;
   padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 960px) {
@@ -215,11 +284,17 @@
 
   .sidebar {
     flex-direction: row;
+    align-items: center;
     overflow-x: auto;
+    gap: 16px;
   }
 
   .sidebarCard {
     display: none;
+  }
+
+  .content {
+    padding: 28px 20px 48px;
   }
 
   .grid {

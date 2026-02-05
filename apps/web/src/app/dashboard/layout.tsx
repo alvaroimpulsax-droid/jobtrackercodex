@@ -26,9 +26,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.layout}>
       <aside className={styles.sidebar}>
-        <div>
-          <div className={styles.brand}>JobTracker</div>
-          <p className={styles.topbarMeta}>Cliente: Alba Salud</p>
+        <div className={styles.brandRow}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Impulsax" className={styles.logo} />
         </div>
         <nav className={styles.nav}>
           {nav.map((item) => {

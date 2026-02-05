@@ -5,12 +5,14 @@ export default function Home() {
   return (
     <main className={styles.hero}>
       <div className="container">
-        <span className="badge">MVP listo para escalar</span>
+        <div className={styles.heroHeader}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Impulsax" className={styles.heroLogo} />
+          <span className="badge">MVP listo para escalar</span>
+        </div>
         <div className={styles.heroGrid}>
           <div>
-            <h1 className={styles.heroTitle}>
-              Control horario y actividad con claridad, no con ruido.
-            </h1>
+            <h1 className={styles.heroTitle}>Control horario y actividad con claridad operativa.</h1>
             <p className={styles.heroCopy}>
               Gestiona equipos distribuidos, registra tiempos y revisa actividad con políticas de
               retención configurables. Diseñado para empresas españolas que necesitan orden y

@@ -1,0 +1,13 @@
+<svg width="200" height="48" viewBox="0 0 200 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Impulsax geometric icon - chevron/arrow pattern -->
+  <g fill="#1976D2">
+    <!-- Top left arrow -->
+    <polygon points="0,16 10,4 20,16 10,28"/>
+    <!-- Top right arrow -->
+    <polygon points="16,16 26,4 36,16 26,28"/>
+    <!-- Bottom arrow -->
+    <polygon points="8,28 18,16 28,28 18,40"/>
+  </g>
+  <!-- impulsax wordmark -->
+  <text x="48" y="33" font-family="-apple-system, BlinkMacSystemFont, SF Pro Display, Segoe UI, Roboto, sans-serif" font-size="26" font-weight="700" fill="#f0f4f8" letter-spacing="-0.5">impulsax</text>
+</svg>

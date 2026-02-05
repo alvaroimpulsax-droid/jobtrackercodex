@@ -7,14 +7,27 @@
 
 .card {
   width: min(420px, 92vw);
-  background: var(--panel);
+  background: rgba(16, 26, 38, 0.92);
   border-radius: var(--radius);
   padding: 32px;
   box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.logo {
+  width: 160px;
+  height: 40px;
 }
 
 .title {
-  font-family: var(--font-serif), serif;
   font-size: 28px;
   margin-bottom: 6px;
 }
@@ -40,18 +53,30 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 12px 14px;
-  background: rgba(12, 14, 20, 0.4);
+  background: rgba(10, 16, 24, 0.6);
   color: var(--text);
 }
 
 .submit {
   padding: 12px 16px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #6ee7d2 0%, #98f5e1 100%);
-  color: #0b0f14;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
   font-weight: 600;
   border: none;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.submit:hover {
+  background: var(--brand-2);
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .hint {

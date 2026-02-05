@@ -31,6 +31,11 @@ export default function LoginPage() {
   return (
     <main className={styles.login}>
       <section className={`${styles.card} fade-in`}>
+        <div className={styles.brandRow}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Impulsax" className={styles.logo} />
+        </div>
+
         <span className="badge">Acceso seguro</span>
         <h1 className={styles.title}>Acceso al panel</h1>
         <p className={styles.subtitle}>Introduce tus credenciales para continuar.</p>
@@ -50,7 +55,7 @@ export default function LoginPage() {
             <input
               className={styles.input}
               type="password"
-              placeholder="••••••••"
+              placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -70,7 +75,7 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-        <p className={styles.hint}>¿Primera vez? Usa el endpoint de bootstrap para crear tu tenant.</p>
+        <p className={styles.hint}>Primera vez? Usa el endpoint de bootstrap para crear tu tenant.</p>
         <p className={styles.hint}>
           <Link href="/">Volver al inicio</Link>
         </p>

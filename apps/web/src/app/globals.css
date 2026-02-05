@@ -1,16 +1,19 @@
 :root {
-  --bg: #0f1115;
-  --bg-alt: #141824;
-  --panel: #1b2130;
-  --panel-soft: #20283a;
-  --text: #f5f7ff;
-  --muted: #a3acc2;
-  --accent: #f6b35f;
-  --accent-2: #6ee7d2;
-  --danger: #ff6b6b;
-  --ok: #57d39a;
-  --radius: 18px;
-  --shadow: 0 18px 40px rgba(10, 12, 20, 0.35);
+  --bg: #0a0e14;
+  --bg-alt: #0c1218;
+  --panel: #101820;
+  --panel-soft: #14202c;
+  --text: #f0f4f8;
+  --muted: #8a9bb0;
+  --brand: #1976D2;
+  --brand-2: #42A5F5;
+  --brand-light: #64B5F6;
+  --accent: #1976D2;
+  --accent-2: #1565C0;
+  --danger: #ef5350;
+  --ok: #4caf50;
+  --radius: 12px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
 }
 
 * {
@@ -26,10 +29,33 @@ body {
 }
 
 body {
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: var(--text);
-  background: radial-gradient(1200px 700px at 15% 10%, #1f2843 0%, #0f1115 45%, #0b0d12 100%);
-  line-height: 1.6;
+  background:
+    radial-gradient(ellipse 800px 400px at 10% -5%, rgba(25, 118, 210, 0.18), transparent 60%),
+    radial-gradient(ellipse 600px 350px at 90% 0%, rgba(66, 165, 245, 0.12), transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.35;
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 a {
@@ -77,13 +103,18 @@ ul {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background: rgba(246, 179, 95, 0.15);
-  color: var(--accent);
+  background: rgba(25, 118, 210, 0.18);
+  color: var(--brand-2);
 }
 
 .fade-in {
   animation: fadeIn 600ms ease forwards;
   opacity: 0;
+}
+
+::selection {
+  background: rgba(25, 118, 210, 0.4);
+  color: #fff;
 }
 
 @keyframes fadeIn {
