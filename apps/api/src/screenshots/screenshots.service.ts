@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
@@ -10,11 +10,15 @@ export class ScreenshotsService {
   private readonly s3: S3Client;
   private readonly bucket: string;
   private readonly publicUrl?: string;
+  private readonly signedUrls: boolean;
+  private readonly signedTtlSeconds: number;
 
   constructor(private readonly prisma: PrismaService, private readonly config: ConfigService) {
     const endpoint = this.config.get<string>('S3_ENDPOINT');
     this.bucket = this.config.get<string>('S3_BUCKET') ?? '';
     this.publicUrl = this.config.get<string>('S3_PUBLIC_URL');
+    this.signedUrls = (this.config.get<string>('S3_SIGNED_URLS') ?? '').toLowerCase() === 'true';
+    this.signedTtlSeconds = Number(this.config.get<string>('S3_SIGNED_TTL_SECONDS') ?? 300);
 
     this.s3 = new S3Client({
       region: this.config.get<string>('S3_REGION') ?? 'auto',
@@ -125,13 +129,30 @@ export class ScreenshotsService {
       take: 200,
     });
 
-    return records.map((rec) => ({
-      id: rec.id,
-      takenAt: rec.takenAt,
-      storageKey: rec.storageKey,
-      url: this.publicUrl ? `${this.publicUrl.replace(/\/$/, '')}/${rec.storageKey}` : null,
-      sizeBytes: rec.sizeBytes,
-      expiresAt: rec.expiresAt,
-    }));
+    const publicBase = this.publicUrl ? this.publicUrl.replace(/\/$/, '') : null;
+
+    return Promise.all(
+      records.map(async (rec) => {
+        let url: string | null = null;
+        if (publicBase && !this.signedUrls) {
+          url = `${publicBase}/${rec.storageKey}`;
+        } else if (this.bucket) {
+          const command = new GetObjectCommand({
+            Bucket: this.bucket,
+            Key: rec.storageKey,
+          });
+          url = await getSignedUrl(this.s3, command, { expiresIn: this.signedTtlSeconds });
+        }
+
+        return {
+          id: rec.id,
+          takenAt: rec.takenAt,
+          storageKey: rec.storageKey,
+          url,
+          sizeBytes: rec.sizeBytes,
+          expiresAt: rec.expiresAt,
+        };
+      }),
+    );
   }
 }
