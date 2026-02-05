@@ -511,14 +511,14 @@ function configureAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.on('checking-for-update', () => sendUpdateStatus('Buscando actualizaciones...'));
-  autoUpdater.on('update-available', () => sendUpdateStatus('ActualizaciÃ³n disponible.'));
+  autoUpdater.on('update-available', () => sendUpdateStatus('ActualizaciÃƒÂ³n disponible.'));
   autoUpdater.on('update-not-available', () => sendUpdateStatus('Sin actualizaciones.'));
-  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualizaciÃ³n: ${err.message}`));
+  autoUpdater.on('error', (err) => sendUpdateStatus(`Error actualizaciÃƒÂ³n: ${err.message}`));
   autoUpdater.on('download-progress', (p) =>
     sendUpdateStatus(`Descargando ${Math.round(p.percent)}%`)
   );
   autoUpdater.on('update-downloaded', () => {
-    sendUpdateStatus('ActualizaciÃ³n descargada. Reinicia para instalar.');
+    sendUpdateStatus('ActualizaciÃƒÂ³n descargada. Reinicia para instalar.');
   });
 }
 
@@ -586,10 +586,17 @@ ipcMain.handle('logout', () => {
 ipcMain.handle('start-tracking', async () => {
   const config = loadConfig();
   if (!config.accessToken) throw new Error('Not logged in');
-  await apiFetch('/time/start', {
-    method: 'POST',
-    body: JSON.stringify({ deviceId: config.deviceId }),
-  });
+  try {
+    await apiFetch('/time/start', {
+      method: 'POST',
+      body: JSON.stringify({ deviceId: config.deviceId }),
+    });
+  } catch (err) {
+    const message = err?.message ?? '';
+    if (!String(message).includes('open time entry')) {
+      throw err;
+    }
+  }
   startTracking();
   return { ok: true };
 });
